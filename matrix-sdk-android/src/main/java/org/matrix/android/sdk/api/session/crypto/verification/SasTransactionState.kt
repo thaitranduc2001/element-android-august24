@@ -32,6 +32,9 @@ sealed class SasTransactionState {
     // Keys exchanged and code ready to be shared
     object SasShortCodeReady : SasTransactionState()
 
+    // New state: Static emoji generation without starting a transaction
+    object StaticEmoji : SasTransactionState()
+
     // I received the other Mac, but might have not yet confirmed the short code
     // at that time (other side already confirmed)
     data class SasMacReceived(val codeConfirmed: Boolean) : SasTransactionState()

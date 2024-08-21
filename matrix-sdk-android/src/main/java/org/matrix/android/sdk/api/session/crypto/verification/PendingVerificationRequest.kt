@@ -15,6 +15,8 @@
  */
 package org.matrix.android.sdk.api.session.crypto.verification
 
+import org.matrix.android.sdk.api.crypto.getAllVerificationEmojis
+
 /**
  * Stores current pending verification requests.
  */
@@ -40,8 +42,21 @@ data class PendingVerificationRequest(
         val isSasSupported: Boolean = false,
         val weShouldShowScanOption: Boolean = false,
         val weShouldDisplayQRCode: Boolean = false,
+        // New property to store the static emoji set for a user
+        var staticEmojis: List<EmojiRepresentation>? = null
 
-        ) {
+) {
 //    val isReady: Boolean = readyInfo != null
 //
+        init {
+    if (staticEmojis == null) {
+        staticEmojis = generateStaticEmojis()
+    }
+}
+
+    private fun generateStaticEmojis(): List<EmojiRepresentation> {
+        val allEmojis = getAllVerificationEmojis()
+        return allEmojis.shuffled().take(7)
+    }
+
 }

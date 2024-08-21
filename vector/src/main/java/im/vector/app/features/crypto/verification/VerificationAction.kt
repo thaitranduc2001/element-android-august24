@@ -38,4 +38,6 @@ sealed class VerificationAction : VectorViewModelAction {
     object CancelledFromSsss : VerificationAction()
     object SecuredStorageHasBeenReset : VerificationAction()
     object SelfVerificationWasNotMe : VerificationAction()
+    object StartStaticEmojiVerification : VerificationAction()
+    object MarkSessionAsVerified : VerificationAction()
 }
