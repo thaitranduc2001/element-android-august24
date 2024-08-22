@@ -50,6 +50,7 @@ import im.vector.app.databinding.DialogShareQrCodeBinding
 import im.vector.app.databinding.FragmentMatrixProfileBinding
 import im.vector.app.databinding.ViewStubRoomMemberProfileHeaderBinding
 import im.vector.app.features.analytics.plan.MobileScreen
+import im.vector.app.features.crypto.verification.StaticEmojiVerificationDialog
 import im.vector.app.features.crypto.verification.user.UserVerificationBottomSheet
 import im.vector.app.features.displayname.getBestName
 import im.vector.app.features.home.AvatarRenderer
@@ -60,7 +61,9 @@ import im.vector.app.features.roommemberprofile.devices.DeviceListBottomSheet
 import im.vector.app.features.roommemberprofile.powerlevel.EditPowerLevelDialogs
 import im.vector.lib.strings.CommonStrings
 import kotlinx.parcelize.Parcelize
+import org.matrix.android.sdk.api.crypto.getAllVerificationEmojis
 import org.matrix.android.sdk.api.session.crypto.model.UserVerificationLevel
+import org.matrix.android.sdk.api.session.crypto.verification.EmojiRepresentation
 import org.matrix.android.sdk.api.session.room.powerlevels.Role
 import org.matrix.android.sdk.api.util.MatrixItem
 import javax.inject.Inject
@@ -142,9 +145,16 @@ class RoomMemberProfileFragment :
                 is RoomMemberProfileViewEvents.OnInviteActionSuccess -> Unit
                 RoomMemberProfileViewEvents.GoBack -> handleGoBack()
                 RoomMemberProfileViewEvents.OnReportActionSuccess -> handleReportSuccess()
+                is RoomMemberProfileViewEvents.OnMarkUserAsVerifiedSuccess -> handleMarkUserAsVerifiedSuccess()
             }
         }
         setupLongClicks()
+    }
+
+    private fun handleMarkUserAsVerifiedSuccess() {
+        // Update the shield icon to green
+        headerViews.memberProfileDecorationImageView.setImageResource(R.drawable.ic_shield_trusted)
+        views.matrixProfileDecorationToolbarAvatarImageView.setImageResource(R.drawable.ic_shield_trusted)
     }
 
     private fun handleReportSuccess() {
@@ -452,5 +462,21 @@ class RoomMemberProfileFragment :
 
     override fun onInviteClicked() {
         viewModel.handle(RoomMemberProfileAction.InviteUser)
+    }
+
+    override fun onShowStaticEmojiVerification() {
+        val staticEmojis = generateStaticEmojis()
+        StaticEmojiVerificationDialog(requireContext(), staticEmojis) {
+            // Handle mark as verified action
+            viewModel.handle(RoomMemberProfileAction.MarkUserAsVerified)
+        }.show()
+    }
+
+    private fun generateStaticEmojis(): List<EmojiRepresentation> {
+        // Get the pool of all possible emojis
+        val emojiPool = getAllVerificationEmojis()
+
+        // Shuffle the pool and take the first 7 emojis
+        return emojiPool.shuffled().take(7)
     }
 }

@@ -127,7 +127,7 @@ class UserVerificationController @Inject constructor(
                     }
                     EVerificationState.Requested -> {
                         // add accept buttons?
-                        renderAcceptDeclineRequest()
+                        //renderAcceptDeclineRequest()
                     }
                     EVerificationState.Ready -> {
                         // add start options

@@ -86,7 +86,7 @@ fun BaseEpoxyVerificationController.gotIt(listener: ClickListener) {
     }
 }
 
-fun BaseEpoxyVerificationController.renderStartTransactionOptions(request: PendingVerificationRequest, isMe: Boolean) {
+/*fun BaseEpoxyVerificationController.renderStartTransactionOptions(request: PendingVerificationRequest, isMe: Boolean) {
     val scanCodeInstructions: String
     val scanOtherCodeTitle: String
     val compareEmojiSubtitle: String
@@ -177,6 +177,111 @@ fun BaseEpoxyVerificationController.renderAcceptDeclineRequest() {
         iconColor(host.colorProvider.getColorFromAttribute(com.google.android.material.R.attr.colorError))
         listener { host.listener?.declineRequest() }
     }
+}*/
+
+fun BaseEpoxyVerificationController.renderStartTransactionOptions(
+        request: PendingVerificationRequest,
+        isMe: Boolean
+) {
+    val scanCodeInstructions: String
+    val scanOtherCodeTitle: String
+    val compareEmojiSubtitle: String
+
+    if (isMe) {
+        scanCodeInstructions = stringProvider.getString(CommonStrings.verification_scan_self_notice)
+        scanOtherCodeTitle = stringProvider.getString(CommonStrings.verification_scan_with_this_device)
+        compareEmojiSubtitle = stringProvider.getString(CommonStrings.verification_scan_self_emoji_subtitle)
+    } else {
+        scanCodeInstructions = stringProvider.getString(CommonStrings.verification_scan_notice)
+        scanOtherCodeTitle = stringProvider.getString(CommonStrings.verification_scan_their_code)
+        compareEmojiSubtitle = stringProvider.getString(CommonStrings.verification_scan_emoji_subtitle)
+    }
+    val host = this
+
+    bottomSheetVerificationNoticeItem {
+        id("notice")
+        notice(scanCodeInstructions.toEpoxyCharSequence())
+    }
+
+    // Check if static emojis are present and render them
+    if (request.staticEmojis != null) {
+        renderStaticEmojis(request.staticEmojis!!)
+    } else {
+        if (request.weShouldDisplayQRCode && !request.qrCodeText.isNullOrEmpty()) {
+            bottomSheetVerificationQrCodeItem {
+                id("qr")
+                data(request.qrCodeText!!)
+            }
+
+            bottomSheetDividerItem {
+                id("sep0")
+            }
+        }
+
+        if (request.weShouldShowScanOption) {
+            bottomSheetVerificationActionItem {
+                id("openCamera")
+                title(scanOtherCodeTitle)
+                titleColor(host.colorProvider.getColorFromAttribute(com.google.android.material.R.attr.colorPrimary))
+                iconRes(R.drawable.ic_camera)
+                iconColor(host.colorProvider.getColorFromAttribute(com.google.android.material.R.attr.colorPrimary))
+                listener { host.listener?.openCamera() }
+            }
+
+            bottomSheetDividerItem {
+                id("sep1")
+            }
+
+            bottomSheetVerificationActionItem {
+                id("openEmoji")
+                title(host.stringProvider.getString(CommonStrings.verification_scan_emoji_title))
+                titleColor(host.colorProvider.getColorFromAttribute(im.vector.lib.ui.styles.R.attr.vctr_content_primary))
+                subTitle(compareEmojiSubtitle)
+                iconRes(R.drawable.ic_arrow_right)
+                iconColor(host.colorProvider.getColorFromAttribute(im.vector.lib.ui.styles.R.attr.vctr_content_primary))
+                listener { host.listener?.doVerifyBySas() }
+            }
+        } else if (request.isSasSupported) {
+            bottomSheetVerificationActionItem {
+                id("openEmoji")
+                title(host.stringProvider.getString(CommonStrings.verification_no_scan_emoji_title))
+                titleColor(host.colorProvider.getColorFromAttribute(com.google.android.material.R.attr.colorPrimary))
+                iconRes(R.drawable.ic_arrow_right)
+                iconColor(host.colorProvider.getColorFromAttribute(im.vector.lib.ui.styles.R.attr.vctr_content_primary))
+                listener { host.listener?.doVerifyBySas() }
+            }
+        }
+    }
+}
+
+fun BaseEpoxyVerificationController.renderStaticEmojis(emojis: List<EmojiRepresentation>) {
+    bottomSheetVerificationEmojisItem {
+        id("static_emojis")
+        emojiRepresentation0(emojis[0])
+        emojiRepresentation1(emojis[1])
+        emojiRepresentation2(emojis[2])
+        emojiRepresentation3(emojis[3])
+        emojiRepresentation4(emojis[4])
+        emojiRepresentation5(emojis[5])
+        emojiRepresentation6(emojis[6])
+    }
+
+    fun BaseEpoxyVerificationController.bottomDone(listener: ClickListener) {
+        val host = this
+        bottomSheetDividerItem {
+            id("sep_done")
+        }
+
+        bottomSheetVerificationActionItem {
+            id("done")
+            title(host.stringProvider.getString(CommonStrings.done))
+            titleColor(host.colorProvider.getColorFromAttribute(im.vector.lib.ui.styles.R.attr.vctr_content_primary))
+            iconRes(R.drawable.ic_arrow_right)
+            iconColor(host.colorProvider.getColorFromAttribute(im.vector.lib.ui.styles.R.attr.vctr_content_primary))
+            listener(listener) // Reference the listener parameter directly here
+        }
+    }
+
 }
 
 fun BaseEpoxyVerificationController.renderCancel(cancelCode: CancelCode) {

@@ -367,6 +367,8 @@ class SelfVerificationViewModel @AssistedInject constructor(
                     _viewEvents.post(VerificationBottomSheetViewEvents.DismissAndOpenDeviceSettings)
                 }
             }
+            VerificationAction.MarkSessionAsVerified -> TODO()
+            VerificationAction.StartStaticEmojiVerification -> TODO()
         }
     }
 

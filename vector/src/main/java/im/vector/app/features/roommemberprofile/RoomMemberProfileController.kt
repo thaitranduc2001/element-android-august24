@@ -53,6 +53,7 @@ class RoomMemberProfileController @Inject constructor(
         fun onBanClicked(isSpace: Boolean, isUserBanned: Boolean)
         fun onCancelInviteClicked()
         fun onInviteClicked()
+        fun onShowStaticEmojiVerification() // New method
     }
 
     override fun buildModels(data: RoomMemberProfileViewState?) {
@@ -133,7 +134,7 @@ class RoomMemberProfileController @Inject constructor(
                                 editable = true,
                                 icon = R.drawable.ic_shield_black,
                                 divider = false,
-                                action = { callback?.onTapVerify() }
+                                action = { callback?.onShowStaticEmojiVerification() } // Updated action
                         )
                     } else {
                         buildProfileAction(

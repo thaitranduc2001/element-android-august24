@@ -170,6 +170,29 @@ class RoomMemberProfileViewModel @AssistedInject constructor(
             RoomMemberProfileAction.InviteUser -> handleInviteAction()
             is RoomMemberProfileAction.SetUserColorOverride -> handleSetUserColorOverride(action)
             is RoomMemberProfileAction.OpenOrCreateDm -> handleOpenOrCreateDm(action)
+            is RoomMemberProfileAction.MarkUserAsVerified -> handleMarkUserAsVerified()
+        }
+    }
+
+    private fun handleMarkUserAsVerified() = withState { state ->
+        viewModelScope.launch {
+            try {
+                // Mark the user as verified in the session
+                session.cryptoService().crossSigningService().trustUser(state.userId)
+
+                // Update the state to reflect the new verification status
+                setState {
+                    copy(
+                            userMXCrossSigningInfo = state.userMXCrossSigningInfo?.copy(wasTrustedOnce = true)
+                    )
+                }
+
+                // Post a success event to update the UI
+                _viewEvents.post(RoomMemberProfileViewEvents.OnMarkUserAsVerifiedSuccess)
+            } catch (failure: Throwable) {
+                // Post a failure event to handle errors
+                _viewEvents.post(RoomMemberProfileViewEvents.Failure(failure))
+            }
         }
     }
 

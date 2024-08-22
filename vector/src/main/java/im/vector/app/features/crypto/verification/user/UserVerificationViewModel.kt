@@ -39,6 +39,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.matrix.android.sdk.api.Matrix
+import org.matrix.android.sdk.api.crypto.getAllVerificationEmojis
 import org.matrix.android.sdk.api.extensions.orFalse
 import org.matrix.android.sdk.api.extensions.tryOrNull
 import org.matrix.android.sdk.api.session.Session
@@ -68,6 +69,7 @@ data class UserVerificationViewState(
 //        val roomId: String,
         val transactionId: String?,
         val otherUserIsTrusted: Boolean = false,
+        val staticEmojis: List<EmojiRepresentation>? = null // New property
 //        val currentDeviceCanCrossSign: Boolean = false,
 //        val userWantsToCancel: Boolean = false,
 ) : MavericksState {
@@ -416,7 +418,27 @@ class UserVerificationViewModel @AssistedInject constructor(
             VerificationAction.ForgotResetAll -> {
                 // Not applicable for user verification
             }
+            VerificationAction.MarkSessionAsVerified -> {
+                withState { _ ->
+                    // Logic to mark the session as verified
+                    _viewEvents.post(VerificationBottomSheetViewEvents.Dismiss)
+                }
+            }
+            VerificationAction.StartStaticEmojiVerification -> {
+                withState { _ ->
+                    val staticEmojis = generateStaticEmojis()
+                    setState {
+                        copy(staticEmojis = staticEmojis)
+                    }
+                    // Logic to start the static emoji verification process
+                }
+            }
         }
+    }
+
+    private fun generateStaticEmojis(): List<EmojiRepresentation> {
+        val allEmojis = getAllVerificationEmojis()
+        return allEmojis.shuffled().take(7)
     }
 
     private fun fetchOtherUserProfile(otherUserId: String) {

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_mark_as_verified" translatable="false">Mark as Verified</string>
+
+</resources>

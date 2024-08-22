@@ -21,6 +21,8 @@ import androidx.annotation.StringRes
 
 data class EmojiRepresentation(
         val emoji: String,
+        val description: String, // Human readable description
+
         @StringRes val nameResId: Int,
         @DrawableRes val drawableRes: Int? = null
 )

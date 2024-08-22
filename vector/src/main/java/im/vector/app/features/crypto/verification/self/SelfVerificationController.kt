@@ -34,7 +34,7 @@ import im.vector.app.features.crypto.verification.user.BaseEpoxyVerificationCont
 import im.vector.app.features.crypto.verification.user.VerificationTransactionData
 import im.vector.app.features.crypto.verification.user.bottomDone
 import im.vector.app.features.crypto.verification.user.gotIt
-import im.vector.app.features.crypto.verification.user.renderAcceptDeclineRequest
+//import im.vector.app.features.crypto.verification.user.renderAcceptDeclineRequest
 import im.vector.app.features.crypto.verification.user.renderCancel
 import im.vector.app.features.crypto.verification.user.renderQrTransaction
 import im.vector.app.features.crypto.verification.user.renderSasTransaction
@@ -209,7 +209,7 @@ class SelfVerificationController @Inject constructor(
                     }
                     EVerificationState.Requested -> {
                         // add accept buttons?
-                        renderAcceptDeclineRequest()
+                        //renderAcceptDeclineRequest()
                         if (state.isThisSessionVerified) {
                             bottomSheetVerificationActionItem {
                                 id("not me")

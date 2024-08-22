@@ -23,6 +23,9 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.text.toSpannable
 import androidx.fragment.app.Fragment
 import com.airbnb.mvrx.fragmentViewModel
@@ -43,6 +46,7 @@ import im.vector.app.features.themes.ThemeUtils
 import im.vector.lib.strings.CommonStrings
 import kotlinx.parcelize.Parcelize
 import org.matrix.android.sdk.api.session.crypto.model.RoomEncryptionTrustLevel
+import org.matrix.android.sdk.api.session.crypto.verification.EmojiRepresentation
 import javax.inject.Inject
 import kotlin.reflect.KClass
 
@@ -65,6 +69,7 @@ class UserVerificationBottomSheet : VectorBaseBottomSheetDialogFragment<BottomSh
     lateinit var avatarRenderer: AvatarRenderer
 
     private val viewModel by fragmentViewModel(UserVerificationViewModel::class)
+    private lateinit var staticEmojis: List<EmojiRepresentation>
 
     init {
         // we manage dismiss/back manually to confirm cancel on verification
@@ -79,6 +84,37 @@ class UserVerificationBottomSheet : VectorBaseBottomSheetDialogFragment<BottomSh
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         showFragment(UserVerificationFragment::class)
+    }
+
+    override fun onCreateView(
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_user_verification_bottom_sheet, container, false)
+
+        withState(viewModel) { state ->
+            staticEmojis = state.staticEmojis ?: emptyList()
+        }
+
+        displayStaticEmojis(view, staticEmojis)
+
+        view.findViewById<Button>(R.id.mark_as_verified_button).setOnClickListener {
+            viewModel.handle(VerificationAction.MarkSessionAsVerified)
+        }
+
+        return view
+    }
+
+    private fun displayStaticEmojis(view: View, emojis: List<EmojiRepresentation>) {
+        val emojiContainer = view.findViewById<LinearLayout>(R.id.emoji_container)
+        emojiContainer.removeAllViews()
+
+        emojis.forEach { emoji ->
+            val emojiView = LayoutInflater.from(context).inflate(R.layout.item_emoji, emojiContainer, false)
+            emojiView.findViewById<TextView>(R.id.emoji_text).text = emoji.emoji
+            emojiView.findViewById<TextView>(R.id.emoji_description).text = emoji.description
+            emojiContainer.addView(emojiView)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
