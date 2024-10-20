@@ -108,6 +108,8 @@ class RoomMemberProfileController @Inject constructor(
             } else if (state.userMXCrossSigningInfo != null) {
                 buildProfileSection(stringProvider.getString(CommonStrings.room_profile_section_security))
                 // Cross signing is enabled for this user
+
+                // có vẻ là chỗ này. nếu như các device không được verified thì nó sẽ warning!!!!!!!
                 if (state.userMXCrossSigningInfo.isTrusted()) {
                     // User is trusted
                     val (icon, titleRes) = if (state.allDevicesAreCrossSignedTrusted) {

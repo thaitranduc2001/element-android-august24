@@ -177,18 +177,26 @@ class RoomMemberProfileViewModel @AssistedInject constructor(
     private fun handleMarkUserAsVerified() = withState { state ->
         viewModelScope.launch {
             try {
+                // function này làm thao tác verify!!!!!!!
+
+                // Post a success event to update the UI
+                _viewEvents.post(RoomMemberProfileViewEvents.OnMarkUserAsVerifiedSuccess)
+
+
                 // Mark the user as verified in the session
                 session.cryptoService().crossSigningService().trustUser(state.userId)
 
                 // Update the state to reflect the new verification status
-                setState {
-                    copy(
-                            userMXCrossSigningInfo = state.userMXCrossSigningInfo?.copy(wasTrustedOnce = true)
-                    )
-                }
+                // setState {
+                    //copy(
+                            // userMXCrossSigningInfo = state.userMXCrossSigningInfo?.copy(wasTrustedOnce = true)
 
-                // Post a success event to update the UI
-                _viewEvents.post(RoomMemberProfileViewEvents.OnMarkUserAsVerifiedSuccess)
+                    //)
+                println(state.userId)
+                println("#################### mark as verified ######################")
+               // }
+
+
             } catch (failure: Throwable) {
                 // Post a failure event to handle errors
                 _viewEvents.post(RoomMemberProfileViewEvents.Failure(failure))

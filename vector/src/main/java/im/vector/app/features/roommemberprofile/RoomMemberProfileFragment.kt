@@ -155,6 +155,7 @@ class RoomMemberProfileFragment :
         // Update the shield icon to green
         headerViews.memberProfileDecorationImageView.setImageResource(R.drawable.ic_shield_trusted)
         views.matrixProfileDecorationToolbarAvatarImageView.setImageResource(R.drawable.ic_shield_trusted)
+        println("******************** User marked as verified ###########")
     }
 
     private fun handleReportSuccess() {
